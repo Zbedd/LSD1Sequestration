@@ -25,6 +25,8 @@ def main(cfg):
     df_collapsed_to_img = fiji_preprocess.collapse_fracin(df)
     
     plotting.plot_barplot_fracin(df_collapsed_to_img)
+    
+    
 
     
     # # Save the preprocessed DataFrame to a new CSV file

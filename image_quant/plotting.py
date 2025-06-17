@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def plot_barplot_fracin(df):
+def plot_barplot_fracin(df, show = True):
     """
     Plots a barplot of average 'fracin' per image grouped by 'group' with a 95% CI.
     
@@ -20,4 +20,9 @@ def plot_barplot_fracin(df):
     plt.ylabel('Average fracin per image')
     plt.title('Average Fracin by Group with 95% CI')
     plt.tight_layout()
-    plt.show()
+    
+    if show:
+        # Show the plot if requested
+        plt.show()
+    
+    return plt.gcf()  # Return the current figure for further use if needed

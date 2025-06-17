@@ -1,6 +1,10 @@
 import pandas as pd
 
 def preprocess_fiji_csv(csv_path: str) -> pd.DataFrame:
+    #Expected output columns:
+    # 'image_id', 'file', 'series', 'group', 
+    # 'intIn', 'intTot', 'fracIn'
+    
     # Read CSV and rename columns to all lowercase.
     df = pd.read_csv(csv_path, sep=',')
     if ' ' in df.columns:
