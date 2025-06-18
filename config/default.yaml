@@ -6,3 +6,9 @@ display_plots : False
 save_artifacts: True
 output_path: 'C:/Users/zbedd/OneDrive/GT/Opportunities/Katz Lab/LSD1 Mislocalization/LSD1 pTau Images 7/'
 
+# Optional list of group comparisons, e.g. [['A', 'B'], ['A', 'C']]
+comparisons:
+
+# Optional subset of groups to analyze, e.g. ['A', 'B']
+groups:
+
