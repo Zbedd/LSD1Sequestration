@@ -34,9 +34,26 @@ def _add_significance_bars(ax: plt.Axes, stats_df: pd.DataFrame, *, alpha: float
     pos = {g: i for i, g in enumerate(groups)}
     bars = {g: ax.patches[i].get_height() for i, g in enumerate(groups)}
 
+    # Account for error bars by using the highest y-position of the
+    # vertical line associated with each bar. ``ax.lines`` will contain
+    # three Line2D objects when ``sns.barplot`` draws error bars.  Each
+    # line corresponds to the vertical part of the error bar at a given
+    # x-position.
+    for line in ax.lines:
+        xdata = line.get_xdata()
+        ydata = line.get_ydata()
+        if len(xdata) == 2 and xdata[0] == xdata[1]:
+            idx = int(round(xdata[0]))
+            if 0 <= idx < len(groups):
+                g = groups[idx]
+                bars[g] = max(bars[g], float(ydata.max()))
+
     y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
-    offset = 0.05 * y_range
     line_height = 0.05 * y_range
+    # distance between the top of the tallest bar in a comparison and the
+    # start of its significance bar
+    offset = 0.02 * y_range
+    # additional space above each bar for the star text
     text_offset = 0.01 * y_range
 
     used: list[tuple[int, int, int]] = []
@@ -58,7 +75,7 @@ def _add_significance_bars(ax: plt.Axes, stats_df: pd.DataFrame, *, alpha: float
                 level = max(level, lvl + 1)
         used.append((x1, x2, level))
 
-        y = max(bars[g1], bars[g2]) + offset + level * line_height
+        y = max(bars[g1], bars[g2]) + offset + level * (line_height + text_offset)        
         bar_x = [x1, x1, x2, x2]
         bar_y = [y, y + line_height * 0.2, y + line_height * 0.2, y]
         ax.plot(bar_x, bar_y, c="k", lw=1.5)
