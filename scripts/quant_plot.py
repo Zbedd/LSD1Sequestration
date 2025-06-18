@@ -30,7 +30,8 @@ def main(cfg):
     barplot_fracin = plotting.plot_barplot_fracIn(df_collapsed_to_img, show=display_plots)
     
     # Get stats
-    mixed_lme_results = stats.run_mixed_lme(df)
+    comparisons = cfg.get('comparisons')
+    mixed_lme_results = stats.run_mixed_lme(df, comparisons=comparisons)
     
     save_artifacts = cfg.get('save_artifacts', True)
     if save_artifacts:
