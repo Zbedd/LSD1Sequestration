@@ -2,13 +2,18 @@ import pandas as pd
 import statsmodels.formula.api as smf
 from itertools import combinations
 import numpy as np
+from statsmodels.stats.multitest import multipletests
 
 
-def run_mixed_lme(df: pd.DataFrame,
-                  dep_var: str = 'fracIn') -> pd.DataFrame:
+def run_mixed_lme(
+    df: pd.DataFrame,
+    dep_var: str = 'fracIn',
+    comparisons: list | None = None,
+    p_adjust_method: str = 'holm',
+) -> pd.DataFrame:
     """
     Run a random-intercepts mixed-effects model comparing groups on a chosen outcome
-    and return a DataFrame of all pairwise group contrasts.
+    and return a DataFrame of group contrasts with adjusted p-values.
 
     Parameters
     ----------
@@ -16,11 +21,17 @@ def run_mixed_lme(df: pd.DataFrame,
         Must contain columns: 'image_id', 'file', 'series', 'group', 'intIn', 'intTot', 'fracIn'.
     dep_var : str
         One of 'intIn', 'intTot', 'fracIn'.
+    comparisons : list of pairs, optional
+        Specific group comparisons to perform. Each pair should contain two group
+        identifiers. If omitted, all pairwise combinations are tested.
+    p_adjust_method : str
+        Method for p-value adjustment passed to ``statsmodels.stats.multitest.multipletests``.
 
     Returns
     -------
     pd.DataFrame
-        Contains: group1, group2, estimate, se, t_value, p_value, ci_lower, ci_upper.
+        Contains: group1, group2, estimate, se, t_value, p_value, p_value_adj,
+        ci_lower, ci_upper.
     """
     # Validate dependent variable
     allowed = {'intIn', 'intTot', 'fracIn'}
@@ -38,8 +49,17 @@ def run_mixed_lme(df: pd.DataFrame,
     idx_map = {name: idx for idx, name in enumerate(exog_names)}
     baseline = groups[0]
 
+    if comparisons is not None:
+        pairs = [(str(a), str(b)) for a, b in comparisons]
+        # Validate provided groups
+        for g1, g2 in pairs:
+            if g1 not in groups or g2 not in groups:
+                raise ValueError(f"Comparison ({g1}, {g2}) contains unknown group")
+    else:
+        pairs = list(combinations(groups, 2))
+
     rows = []
-    for g1, g2 in combinations(groups, 2):
+    for g1, g2 in pairs:
         # Build contrast vector
         cont = [0.0] * len(exog_names)
         if g1 != baseline:
@@ -70,4 +90,9 @@ def run_mixed_lme(df: pd.DataFrame,
         })
 
     results_df = pd.DataFrame(rows)
-    return 
+
+    if not results_df.empty:
+        _, p_adj, _, _ = multipletests(results_df['p_value'], method=p_adjust_method)
+        results_df['p_value_adj'] = p_adj
+
+    return results_df
