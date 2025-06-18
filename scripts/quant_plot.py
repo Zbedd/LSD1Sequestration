@@ -25,13 +25,12 @@ def main(cfg):
     df = fiji_preprocess.preprocess_fiji_csv(csv_path)
     df_collapsed_to_img = fiji_preprocess.collapse_fracIn(df)
     
-    # Get plots
-    display_plots = cfg.get('display_plots', False)
-    barplot_fracin = plotting.plot_barplot_fracIn(df_collapsed_to_img, show=display_plots)
-    
-    # Get stats
+    # Statistics
     comparisons = cfg.get('comparisons')
     mixed_lme_results = stats.run_mixed_lme(df, comparisons=comparisons)
+
+    # Plots
+    display_plots = cfg.get('display_plots', False)
     
     save_artifacts = cfg.get('save_artifacts', True)
     if save_artifacts:
@@ -41,6 +40,12 @@ def main(cfg):
         # Sets file names for saving
         barplot_fracin_name = f"barplot_fracin_{date}"
         mixed_lme_results_name = f"mixed_lme_results_{date}"
+        
+        barplot_fracin = plotting.plot_barplot_fracIn(
+            df_collapsed_to_img,
+            show=display_plots,
+            stats_df=mixed_lme_results,
+            )
         
         from image_quant import write
         write.save_artifacts(
