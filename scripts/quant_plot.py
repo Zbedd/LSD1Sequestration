@@ -23,6 +23,12 @@ def main(cfg):
     csv_path = os.path.join(base_path, csv_rel_path)
         
     df = fiji_preprocess.preprocess_fiji_csv(csv_path)
+    
+    #Filter by groups if specified in the config
+    groups = cfg.get('groups')
+    if groups:
+        df = df[df['group'].isin(groups)]
+    
     df_collapsed_to_img = fiji_preprocess.collapse_fracIn(df)
     
     # Statistics
