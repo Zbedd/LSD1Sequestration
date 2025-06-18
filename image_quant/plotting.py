@@ -16,7 +16,7 @@ def _star_string(p: float) -> str:
     return "ns"
 
 
-def _add_significance_bars(ax: plt.Axes, stats_df: pd.DataFrame) -> None:
+def _add_significance_bars(ax: plt.Axes, stats_df: pd.DataFrame, *, alpha: float = 0.05) -> None:
     """Draw significance bars with stars on ``ax`` using ``stats_df``.
 
     Parameters
@@ -26,6 +26,9 @@ def _add_significance_bars(ax: plt.Axes, stats_df: pd.DataFrame) -> None:
     stats_df : pandas.DataFrame
         DataFrame produced by ``run_mixed_lme`` with columns ``group1``,
         ``group2`` and ``p_value_adj``.
+    alpha : float, default 0.05
+        Only comparisons with ``p_value_adj`` (or ``p_value`` if absent)
+        below this threshold are plotted.
     """
 
     groups = [t.get_text() for t in ax.get_xticklabels()]
@@ -41,6 +44,10 @@ def _add_significance_bars(ax: plt.Axes, stats_df: pd.DataFrame) -> None:
     max_y = 0.0
 
     for _, row in stats_df.iterrows():
+        p = row.get("p_value_adj", row.get("p_value"))
+        if not pd.notna(p) or p >= alpha:
+            continue
+
         g1, g2 = str(row["group1"]), str(row["group2"])
         if g1 not in pos or g2 not in pos:
             continue
