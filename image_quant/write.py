@@ -5,6 +5,7 @@ import pandas as pd
 from matplotlib.figure import Figure
 from typing import List, Tuple, Union
 
+
 def save_artifacts(
     dataframes: List[Tuple[str, pd.DataFrame]],
     plots: List[Tuple[str, Figure]],
@@ -15,10 +16,10 @@ def save_artifacts(
 
     Parameters
     ----------
-    dataframes : List of (name, DataFrame)
-        Each tuple contains a desired filename (without extension) and the DataFrame to save.
-    plots : List of (name, matplotlib.figure.Figure)
-        Each tuple contains a desired filename (without extension) and the Figure to save.
+    dataframes : list of (name, pd.DataFrame)
+        Tuples of filename (no extension) and DataFrame; None entries will be skipped.
+    plots : list of (name, matplotlib.figure.Figure)
+        Tuples of filename and Figure; None entries will be skipped.
     base_path : str or Path
         Root folder under which the dated folder will be created.
 
@@ -27,7 +28,6 @@ def save_artifacts(
     Path
         Path of the created output directory.
     """
-    # Resolve base path and create dated directory
     base = Path(base_path)
     date_str = datetime.now().strftime("%Y-%m-%d")
     out_dir = base / date_str
@@ -35,6 +35,9 @@ def save_artifacts(
 
     # Save dataframes
     for name, df in dataframes:
+        if df is None:
+            print(f"Warning: DataFrame '{name}' is None, skipping.")
+            continue
         if not isinstance(df, pd.DataFrame):
             raise TypeError(f"Expected pandas DataFrame for '{name}', got {type(df)}")
         file_path = out_dir / f"{name}.csv"
@@ -43,6 +46,9 @@ def save_artifacts(
 
     # Save plots
     for name, fig in plots:
+        if fig is None:
+            print(f"Warning: Figure '{name}' is None, skipping.")
+            continue
         if not isinstance(fig, Figure):
             raise TypeError(f"Expected matplotlib.figure.Figure for '{name}', got {type(fig)}")
         file_path = out_dir / f"{name}.png"

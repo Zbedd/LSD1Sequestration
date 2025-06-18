@@ -9,7 +9,6 @@ def preprocess_fiji_csv(csv_path: str) -> pd.DataFrame:
     df = pd.read_csv(csv_path, sep=',')
     if ' ' in df.columns:
         df = df.drop(' ', axis=1)
-    df = df.rename(columns=lambda x: x.lower())
     # Define new columns based on the existing ones.
     # 'group' is the first character of the file name.
     df['group'] = df['file'].str[0]
@@ -32,15 +31,15 @@ def preprocess_fiji_csv(csv_path: str) -> pd.DataFrame:
     
     return df
 
-def collapse_fracin(df: pd.DataFrame) -> pd.DataFrame:
+def collapse_fracIn(df: pd.DataFrame) -> pd.DataFrame:
     # Group rows by image_id, taking the first value for file, series, and group, and
-    # calculating mean of fracin
-    # Output df has columns: image_id, file, series, group, fracin, sample_size
+    # calculating mean of fracIn
+    # Output df has columns: image_id, file, series, group, fracIn, sample_size
     grouped = df.groupby('image_id').agg({
         'file': 'first',
         'series': 'first',
         'group': 'first',
-        'fracin': 'mean'
+        'fracIn': 'mean'
     })
     # Add sample_size as the number of rows for each image_id
     grouped['sample_size'] = df.groupby('image_id').size()

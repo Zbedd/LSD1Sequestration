@@ -14,6 +14,7 @@ if str(module_dir) not in sys.path:
       
 from image_quant import fiji_output_preprocessing as fiji_preprocess
 from image_quant import plotting
+from image_quant import stats
 
 def main(cfg):
     # Preprocess the Fiji CSV file
@@ -22,19 +23,31 @@ def main(cfg):
     csv_path = os.path.join(base_path, csv_rel_path)
         
     df = fiji_preprocess.preprocess_fiji_csv(csv_path)
-    df_collapsed_to_img = fiji_preprocess.collapse_fracin(df)
+    df_collapsed_to_img = fiji_preprocess.collapse_fracIn(df)
     
-    plotting.plot_barplot_fracin(df_collapsed_to_img)
+    # Get plots
+    display_plots = cfg.get('display_plots', False)
+    barplot_fracin = plotting.plot_barplot_fracIn(df_collapsed_to_img, show=display_plots)
     
+    # Get stats
+    mixed_lme_results = stats.run_mixed_lme(df)
     
-
+    save_artifacts = cfg.get('save_artifacts', True)
+    if save_artifacts:
+        output_path = cfg.get('output_path', base_path)
+        date = pd.to_datetime('today').strftime('%Y-%m-%d')
+        
+        # Sets file names for saving
+        barplot_fracin_name = f"barplot_fracin_{date}"
+        mixed_lme_results_name = f"mixed_lme_results_{date}"
+        
+        from image_quant import write
+        write.save_artifacts(
+            dataframes=[(mixed_lme_results_name, mixed_lme_results)],
+            plots=[(barplot_fracin_name, barplot_fracin)],
+            base_path=output_path
+        )
     
-    # # Save the preprocessed DataFrame to a new CSV file
-    # output_csv_path = cfg['output_csv_path']
-    # df.to_csv(output_csv_path, index=False)
-    
-    # print(f"Preprocessed data saved to {output_csv_path}")
-
 if __name__ == "__main__":
     with open('config/default.yaml', 'r') as file:
         cfg = yaml.safe_load(file)

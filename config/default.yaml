@@ -1,4 +1,8 @@
 lsd1_image_group_path: 'C:/Users/zbedd/OneDrive/GT/Opportunities/Katz Lab/LSD1 Mislocalization/LSD1 pTau Images 7/'
 fiji_seq_table_rel_path: 'LSD1_pTau_7_fiji_6_16_2025.csv'
 
+display_plots : False
+
+save_artifacts: True
 output_path: 'C:/Users/zbedd/OneDrive/GT/Opportunities/Katz Lab/LSD1 Mislocalization/LSD1 pTau Images 7/'
+
