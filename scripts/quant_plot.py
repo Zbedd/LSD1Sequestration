@@ -23,14 +23,24 @@ def main(cfg):
     csv_path = os.path.join(base_path, csv_rel_path)
         
     df = fiji_preprocess.preprocess_fiji_csv(csv_path)
+
+    groups = cfg.get('groups')
+    if groups:
+        df = df[df['group'].isin(groups)]
+
     df_collapsed_to_img = fiji_preprocess.collapse_fracIn(df)
     
-    # Get plots
+    # Statistics
+    comparisons = cfg.get('comparisons')
+    mixed_lme_results = stats.run_mixed_lme(df, comparisons=comparisons)
+
+    # Plots
     display_plots = cfg.get('display_plots', False)
-    barplot_fracin = plotting.plot_barplot_fracIn(df_collapsed_to_img, show=display_plots)
-    
-    # Get stats
-    mixed_lme_results = stats.run_mixed_lme(df)
+    barplot_fracin = plotting.plot_barplot_fracIn(
+        df_collapsed_to_img,
+        show=display_plots,
+        stats_df=mixed_lme_results,
+    )
     
     save_artifacts = cfg.get('save_artifacts', True)
     if save_artifacts:
