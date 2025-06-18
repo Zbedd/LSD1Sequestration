@@ -70,4 +70,4 @@ def run_mixed_lme(df: pd.DataFrame,
         })
 
     results_df = pd.DataFrame(rows)
-    return 
+    return results_df
