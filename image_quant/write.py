@@ -54,5 +54,17 @@ def save_artifacts(
         file_path = out_dir / f"{name}.png"
         fig.savefig(file_path, bbox_inches='tight')
         print(f"Saved plot '{name}' to {file_path}")
+        
+    project_root = Path(__file__).resolve().parents[1]
+    default_yaml_path = project_root / "config" / "default.yaml"
+    default_txt_path  = out_dir / "default.txt"
 
+    if default_yaml_path.is_file():
+        # read & write in one go:
+        content = default_yaml_path.read_text(encoding="utf-8")
+        default_txt_path.write_text(content, encoding="utf-8")
+        print(f"Copied {default_yaml_path} → {default_txt_path}")
+    else:
+        print(f"⚠️  Could not find {default_yaml_path}, skipping default.txt")
+    
     return out_dir

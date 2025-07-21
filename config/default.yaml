@@ -7,12 +7,13 @@ save_artifacts: True
 output_path: 'C:/Users/zbedd/OneDrive/GT/Opportunities/Katz Lab/LSD1 Mislocalization/LSD1 pTau Images 7/'
 
 # Optional subset of groups to analyze, e.g. ['A', 'B']
-groups: ['A', 'C', 'E', 'G', 'I', 'K']
+groups: 
+# groups: ['A', 'C', 'E', 'G', 'I', 'K']
 
 # Optional list of group comparisons, e.g. [['A', 'B'], ['A', 'C']]
 comparisons: 
 
 # # With and w/o tau | M and N are excluded due to insufficient sample size
-# comparisons: [['A', 'B'], ['C', 'D'], ['E', 'F'], ['G', 'H'], 
-#               ['I', 'J'], ['K', 'L']]
+comparisons: [['A', 'B'], ['C', 'D'], ['E', 'F'], ['G', 'H'], 
+              ['I', 'J'], ['K', 'L']]
 
